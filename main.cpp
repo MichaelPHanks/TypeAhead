@@ -85,38 +85,113 @@ int main()
     std::cout << "(10, 20)";*/
 
     std::string word;
-
-    while (true)
+    bool done = false;
+    std::vector<std::string> phrase;
+    phrase.push_back("");
+    while (!done)
     {
         rlutil::locate(xPos, 1);
 
+        int key = rlutil::getkey();
+        rlutil::cls();
 
-        char key = rlutil::getkey();
-        if (key == rlutil::KEY_BACKSPACE)
+        xPos = 1;
+        switch (key)
         {
-            xPos -= 1;
-            rlutil::locate(xPos, 1);
-            std::cout << " ";
-            key = '\0';
-            xPos -= 1;
+            case rlutil::KEY_ESCAPE:
+                done = true;
+                break;
+            case rlutil::KEY_BACKSPACE:
+                if (phrase.size() > 1)
+                {
+                    if (word == "")
+                    {
+                        phrase.pop_back();
+                        word = phrase.at(phrase.size() - 1);
+                    }
+                    else
+                    {
+                        word = phrase.at(phrase.size() - 1);
+                        word.pop_back();
+                        phrase.pop_back();
+                        phrase.push_back(word);
+                    }
+                }
+                else
+                {
+                    if (word != "")
+                    {
+                        word = phrase.at(phrase.size() - 1);
+                        word.pop_back();
+                        phrase.pop_back();
+                        phrase.push_back(word);
+                    }
+                }
+
+                rlutil::locate(xPos, 1);
+                std::cout << "";
+
+                break;
+            case rlutil::KEY_SPACE:
+                word = "";
+                phrase.push_back(word);
+                break;
+            default:
+                phrase.pop_back();
+                word.push_back(static_cast<char>(key));
+                phrase.push_back(word);
+                break;
         }
-        word += key;
-        rlutil::setChar(key);
-        unsigned int prev = xPos;
+        rlutil::locate(xPos, 1);
+
+        for (std::string tempWord : phrase)
+        {
+            rlutil::locate(xPos, 1);
+
+            for (char letter : tempWord)
+            {
+                rlutil::setChar(letter);
+                xPos += 1;
+                rlutil::locate(xPos, 1);
+            }
+            rlutil::setChar(' ');
+            xPos += 1;
+            rlutil::locate(xPos, 1);
+        }
+        xPos -= 1;
+
+
+
+
+
+        // TODO: I am currently doing many things wrong with this implementation... change it so it doesn't have to clear the screen every time. 
+        // Also change it so then I am using a different variable for the xPos in the below part. rlutil::locate() doesn't work in the way I was hoping (unless I am dumb).
+        unsigned int yPos = 2;
+        unsigned int tempX = 0;
         int rows = rlutil::trows();
         std::vector<std::string> words = dictTree->predict(word, rows - 1);
-        int yPos = 10;
-        for (int i = 0; i < words.size(); i++)
+        rlutil::locate(tempX, yPos);
+        // std::cout << " " << std::endl;
+        xPos = 1;
+        for (std::string tempWord : words)
         {
-            rlutil::locate(0, yPos);
-            std::cout << words.at(i) << std::endl;
+            rlutil::locate(xPos, yPos);
 
-            yPos += 10;
+            for (char letter : tempWord)
+            {
+                rlutil::setChar(letter);
+                xPos += 1;
+                rlutil::locate(xPos, yPos);
+            }
+            // rlutil::setChar(' ');
+            xPos = 1;
+            rlutil::locate(xPos, yPos);
+            yPos += 1;
         }
 
-        xPos += 1;
-
         // std::cout << xPos;
+        rlutil::locate(xPos, yPos);
+        std::cout.flush();
     }
 
     return 0;
