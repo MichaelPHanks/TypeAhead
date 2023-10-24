@@ -11,11 +11,10 @@ std::shared_ptr<WordTree> readDictionary(std::string filename)
 {
     auto wordTree = std::make_shared<WordTree>();
     std::ifstream inFile = std::ifstream(filename, std::ios::in);
-    int yeah = 0;
+
     while (!inFile.eof())
     {
         std::string word;
-
         std::getline(inFile, word);
         // Need to consume the carriage return character for some systems, if it exists
         if (!word.empty() && word[word.size() - 1] == '\r')
@@ -34,28 +33,15 @@ std::shared_ptr<WordTree> readDictionary(std::string filename)
                                return static_cast<char>(std::tolower(c));
                            });
             wordTree->add(word);
-            yeah += 1;
         }
     }
-    std::cout << yeah << std::endl;
 
     return wordTree;
 }
 int main()
 {
 
-    std::shared_ptr<WordTree> tree = std::make_shared<WordTree>();
-    // std::cout << tree->size() << std::endl;
-    // std::cout << tree->m_root->children.size() << std::endl;
-
-    // testing my knowledge of this program...
     // inserting the word 'fared' into the tree..
-
-    tree->add("aeah");
-    if (tree->find("aeah"))
-    {
-        std::cout << "Found aeah" << std::endl;
-    }
 
     // NOTE: the size of dictTree should be 10,681
     std::shared_ptr<WordTree> dictTree = readDictionary("dictionary.txt");
@@ -64,12 +50,6 @@ int main()
     // std::cout << tree->size() << std::endl;
 
     // std::cout << dictTree->size() << std::endl;
-    std::vector<std::string> words = dictTree->predict("pred", 10);
-    std::cout << words.size() << std::endl;
-    for (unsigned int i = 0; i < words.size(); i++)
-    {
-        std::cout << words.at(i) << std::endl;
-    }
 
     rlutil::cls();
     int xPos = 1;
@@ -160,32 +140,26 @@ int main()
         }
         xPos -= 1;
 
-
-
-
-
-        // TODO: I am currently doing many things wrong with this implementation... change it so it doesn't have to clear the screen every time. 
+        // TODO: I am currently doing many things wrong with this implementation... change it so it doesn't have to clear the screen every time.
         // Also change it so then I am using a different variable for the xPos in the below part. rlutil::locate() doesn't work in the way I was hoping (unless I am dumb).
         unsigned int yPos = 2;
-        unsigned int tempX = 0;
+        unsigned int tempX = 1;
         int rows = rlutil::trows();
-        std::vector<std::string> words = dictTree->predict(word, rows - 1);
-        rlutil::locate(tempX, yPos);
-        // std::cout << " " << std::endl;
-        xPos = 1;
+        std::vector<std::string> words = dictTree->predict(word, static_cast<std::uint8_t>(rows - 1));
+        // rlutil::locate(tempX, yPos);
         for (std::string tempWord : words)
         {
-            rlutil::locate(xPos, yPos);
+            rlutil::locate(tempX, yPos);
 
             for (char letter : tempWord)
             {
                 rlutil::setChar(letter);
-                xPos += 1;
-                rlutil::locate(xPos, yPos);
+                tempX += 1;
+                rlutil::locate(tempX, yPos);
             }
             // rlutil::setChar(' ');
-            xPos = 1;
-            rlutil::locate(xPos, yPos);
+            tempX = 1;
+            rlutil::locate(tempX, yPos);
             yPos += 1;
         }
 

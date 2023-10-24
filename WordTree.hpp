@@ -1,9 +1,10 @@
 #pragma once
 #include <array>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
-
+// Comment
 class TreeNode
 {
   public:
@@ -20,5 +21,5 @@ class WordTree
     bool find(std::string word);
     std::vector<std::string> predict(std::string partial, std::uint8_t howMany);
     std::size_t size();
-    int m_sizeOfTree;
+    int m_sizeOfTree = 0;
 };

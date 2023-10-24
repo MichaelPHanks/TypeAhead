@@ -3,6 +3,7 @@
 #include "WordTree.hpp"
 
 #include <algorithm>
+#include <cstdint>
 #include <iostream>
 #include <locale>
 #include <queue>
@@ -42,7 +43,6 @@ void WordTree::add(std::string word)
         // std::cout << root->children.at(value) << std::endl;
         if (root->children.at(value) == nullptr)
         {
-            // std::cout << "Initializing " << word[i] << " for word " << word << std::endl;
             std::shared_ptr<TreeNode> node = std::make_shared<TreeNode>();
             root->children.at(value) = node;
         }
@@ -50,8 +50,12 @@ void WordTree::add(std::string word)
 
         if (i == word.size() - 1)
         {
-            root->endOfWord = true;
-            m_sizeOfTree += 1;
+            if (!root->endOfWord)
+            {
+
+                root->endOfWord = true;
+                m_sizeOfTree += 1;
+            }
         }
     }
 }
@@ -164,7 +168,7 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
         {
             if (root->children.at(j) != nullptr)
             {
-                char ascii = '0' + (j + 49);
+                char ascii = '0' + (static_cast<char>(j) + static_cast<char>(49));
 
                 if (root->children.at(j)->endOfWord)
                 {
@@ -187,6 +191,5 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
 }
 std::size_t WordTree::size()
 {
-    std::cout << m_sizeOfTree << std::endl;
-    return sizeof(m_root);
+    return m_sizeOfTree;
 }
