@@ -1,4 +1,3 @@
-// NOTE: dictionary.txt is NOT in the /build folder. I need to look into this more.
 
 #include "WordTree.hpp"
 
@@ -22,6 +21,7 @@ void WordTree::add(std::string word)
         return;
     }
 
+    // If all of the characters in given word are not punctuation...
     if (std::all_of(word.begin(), word.end(), [](unsigned char c)
                     {
                         return std::isalpha(c);
@@ -36,11 +36,13 @@ void WordTree::add(std::string word)
     {
         return;
     }
+
+    // Loop through each node, one character at a time.
     std::shared_ptr<TreeNode> root = m_root;
     for (unsigned int i = 0; i < word.size(); i++)
     {
+        // Converstion to find placement in vector.
         unsigned int value = int(word[i]) - 97;
-        // std::cout << root->children.at(value) << std::endl;
         if (root->children.at(value) == nullptr)
         {
             std::shared_ptr<TreeNode> node = std::make_shared<TreeNode>();
@@ -65,6 +67,7 @@ bool WordTree::find(std::string word)
     {
         return false;
     }
+    // If all of the characters in given word are not punctuation...
 
     if (std::all_of(word.begin(), word.end(), [](unsigned char c)
                     {
@@ -84,6 +87,8 @@ bool WordTree::find(std::string word)
 
     for (unsigned int i = 0; i < word.size(); i++)
     {
+        // Converstion to find placement in vector.
+
         unsigned int value = int(word[i]) - 97;
         if (root->children.at(value) == nullptr)
         {
@@ -110,6 +115,8 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
     {
         return std::vector<std::string>();
     }
+    // If all of the characters in given word are not punctuation...
+
     if (std::all_of(partial.begin(), partial.end(), [](unsigned char c)
                     {
                         return std::isalpha(c);
@@ -129,6 +136,8 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
     std::shared_ptr<TreeNode> root = m_root;
     for (unsigned int i = 0; i < partial.size(); i++)
     {
+        // Converstion to find placement in vector.
+
         unsigned int value = int(partial[i]) - 97;
         if (root->children.at(value) == nullptr)
         {
@@ -138,23 +147,11 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
         root = root->children.at(value);
     }
 
-    /*for (unsigned int j = 0; j < howMany; j++)
-    {
-        unsigned int totalNull = 0;
-        while (totalNull < 26)
-        {
-            for (std::shared_ptr<TreeNode> node : root->children)
-            {
-                if (node == nullptr)
-                {
-                    totalNull += 1;
-                }
-            }
-        }
-    }*/
+    // Queues for TreeNodes and word.
     std::queue<std::shared_ptr<TreeNode>> queue;
     std::queue<std::string> wordQueue;
     std::string tempWord;
+
     queue.push(root);
     wordQueue.push(partial);
     while (queue.size() != 0)
@@ -168,6 +165,7 @@ std::vector<std::string> WordTree::predict(std::string partial, std::uint8_t how
         {
             if (root->children.at(j) != nullptr)
             {
+                // Current 'letter' that we are at.
                 char ascii = '0' + (static_cast<char>(j) + static_cast<char>(49));
 
                 if (root->children.at(j)->endOfWord)

@@ -41,31 +41,18 @@ std::shared_ptr<WordTree> readDictionary(std::string filename)
 int main()
 {
 
-    // inserting the word 'fared' into the tree..
 
-    // NOTE: the size of dictTree should be 10,681
     std::shared_ptr<WordTree> dictTree = readDictionary("dictionary.txt");
 
-    // TODO: Fix tree size method.
-    // std::cout << tree->size() << std::endl;
-
-    // std::cout << dictTree->size() << std::endl;
-
+    // Clear the screen.
     rlutil::cls();
     int xPos = 1;
-    /*rlutil::locate(1, 0);
-    std::cout << "(1, 0)";
-    rlutil::locate(5, 0);
-    std::cout << "(5, 0)";
-    rlutil::locate(10, 0);
-    std::cout << "(10, 0)";
-    rlutil::locate(20, 0);
-    std::cout << "(20, 0)";
-    rlutil::locate(10, 20);
-    std::cout << "(10, 20)";*/
 
     std::string word;
     bool done = false;
+
+    // This vector 'phrase' will contain what we have types so far. If there is a space, it is added to the phrase.
+    // In my implementation, I have spaces in the phrase, so if we are currently on a space, there is no given prediction.
     std::vector<std::string> phrase;
     phrase.push_back("");
     while (!done)
@@ -73,7 +60,6 @@ int main()
         rlutil::locate(xPos, 1);
 
         int key = rlutil::getkey();
-        rlutil::cls();
 
         xPos = 1;
         switch (key)
@@ -86,11 +72,13 @@ int main()
                 {
                     if (word == "")
                     {
+                        // pop back of vector and set word to previous word in phrase
                         phrase.pop_back();
                         word = phrase.at(phrase.size() - 1);
                     }
                     else
                     {
+                        // if current word is not blank, pop back end of word
                         word = phrase.at(phrase.size() - 1);
                         word.pop_back();
                         phrase.pop_back();
@@ -113,10 +101,12 @@ int main()
 
                 break;
             case rlutil::KEY_SPACE:
+                // add blank word to vector
                 word = "";
                 phrase.push_back(word);
                 break;
             default:
+                // add key to current word
                 phrase.pop_back();
                 word.push_back(static_cast<char>(key));
                 phrase.push_back(word);
@@ -124,6 +114,7 @@ int main()
         }
         rlutil::locate(xPos, 1);
 
+        // print out the current phrase
         for (std::string tempWord : phrase)
         {
             rlutil::locate(xPos, 1);
@@ -139,31 +130,43 @@ int main()
             rlutil::locate(xPos, 1);
         }
         xPos -= 1;
-
-        // TODO: I am currently doing many things wrong with this implementation... change it so it doesn't have to clear the screen every time.
-        // Also change it so then I am using a different variable for the xPos in the below part. rlutil::locate() doesn't work in the way I was hoping (unless I am dumb).
-        unsigned int yPos = 2;
+        // Initialize new vector for giving blank words
+        std::vector<std::string> tempWords;
+        unsigned int yPos = 3;
         unsigned int tempX = 1;
         int rows = rlutil::trows();
-        std::vector<std::string> words = dictTree->predict(word, static_cast<std::uint8_t>(rows - 1));
-        // rlutil::locate(tempX, yPos);
-        for (std::string tempWord : words)
+
+        // Longest word I could find was 20 ish in length, so I have 25 spaces
+        for (int i = 0; i < rows - 4; i++)
+        {
+            tempWords.push_back("                         ");
+        }
+
+        std::vector<std::string> words = dictTree->predict(word, static_cast<std::uint8_t>(rows - 4));
+
+        // Add predicted words to tempWords vector, and add spaces at end to delete 'extra' characters that would be left over
+        for (unsigned int j = 0; j < words.size(); j++)
+        {
+            tempWords.at(j) = words.at(j);
+            tempWords.at(j) += "                    ";
+        }
+        rlutil::locate(tempX, yPos);
+
+        std::cout << "--- prediction ---";
+        yPos += 1;
+        rlutil::locate(tempX, yPos);
+
+        // Print out the predicted words
+        for (std::string tempWord : tempWords)
         {
             rlutil::locate(tempX, yPos);
 
-            for (char letter : tempWord)
-            {
-                rlutil::setChar(letter);
-                tempX += 1;
-                rlutil::locate(tempX, yPos);
-            }
-            // rlutil::setChar(' ');
+            std::cout << tempWord;
             tempX = 1;
             rlutil::locate(tempX, yPos);
             yPos += 1;
         }
 
-        // std::cout << xPos;
         rlutil::locate(xPos, yPos);
         std::cout.flush();
     }

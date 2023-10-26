@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 #include <vector>
-// Comment
 class TreeNode
 {
   public:
@@ -22,4 +21,6 @@ class WordTree
     std::vector<std::string> predict(std::string partial, std::uint8_t howMany);
     std::size_t size();
     int m_sizeOfTree = 0;
+
+  private:
 };
